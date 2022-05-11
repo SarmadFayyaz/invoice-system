@@ -64,6 +64,7 @@ $html .= '<html>
 		<main>';
 		session_start();
 		include 'Invoice.php';
+		include 'env.php';
 		$invoice = new Invoice();
 		$invoice->checkLoggedIn();
 		if(!empty($_GET['quotation_id']) && $_GET['quotation_id']) {
