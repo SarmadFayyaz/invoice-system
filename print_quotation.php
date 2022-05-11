@@ -159,6 +159,11 @@ $html .= '<html>
 			$html.='
 			<div class="" style="margin-top: 10px;"> Note: '. $invoiceValues['note'] .'</div>
 			';
+			$html .= '
+						<div style="position: absolute; bottom: 90px; right: 50px;">
+							<label for="" >Signature</label> <br>
+							<img src="' . $URL . $_SESSION['file_path'] . '" alt="Signature" width="200" height="100"style="margin-top: 5px;" >
+						</div>';
 		$html .='</main>
 </body>
 </html>
