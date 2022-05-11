@@ -15,6 +15,7 @@ if (!empty($_POST['email']) && !empty($_POST['pwd'])) {
 		$_SESSION['mobile'] = $user[0]['mobile'];
 		$_SESSION['ntn'] = $user[0]['ntn'];
 		$_SESSION['strn'] = $user[0]['strn'];
+		$_SESSION['file_path'] = $user[0]['file_path'];
 		header("Location:invoice_list.php");
 	} else {
 		$loginError = "Invalid email or password!";

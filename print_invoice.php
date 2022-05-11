@@ -10,6 +10,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 $options = new Options();
+$options->set('isRemoteEnabled', true);
 $dompdf = new Dompdf($options);
 $html = '';
 $html .= '<html>
@@ -62,17 +63,18 @@ $html .= '<html>
 
 		<!-- Wrap the content of your PDF inside a main tag -->
 		<main>';
-		session_start();
-		include 'Invoice.php';
-		$invoice = new Invoice();
-		$invoice->checkLoggedIn();
-		if(!empty($_GET['invoice_id']) && $_GET['invoice_id']) {
-			echo $_GET['invoice_id'];
-			$invoiceValues = $invoice->getInvoice($_GET['invoice_id']);		
-			$invoiceItems = $invoice->getInvoiceItems($_GET['invoice_id']);		
-		}
-		$invoiceDate = date("d/M/Y, H:i:s", strtotime($invoiceValues['order_date']));
-		$html .= '<table width="100%" cellpadding="5" cellspacing="0">
+session_start();
+include 'Invoice.php';
+include 'env.php';
+$invoice = new Invoice();
+$invoice->checkLoggedIn();
+if (!empty($_GET['invoice_id']) && $_GET['invoice_id']) {
+	echo $_GET['invoice_id'];
+	$invoiceValues = $invoice->getInvoice($_GET['invoice_id']);
+	$invoiceItems = $invoice->getInvoiceItems($_GET['invoice_id']);
+}
+$invoiceDate = date("d/M/Y, H:i:s", strtotime($invoiceValues['order_date']));
+$html .= '<table width="100%" cellpadding="5" cellspacing="0">
 			<tr>
 			<td colspan="2" align="center" style="font-size:18px"><b>Invoice</b></td>
 			</tr>
@@ -83,18 +85,18 @@ $html .= '<html>
 			<td width="65%">
 			To,<br />
 			<b>RECEIVER (BILL TO)</b><br />
-			Name : '.$invoiceValues['name'].'<br /> 
-			Billing Address : '.$invoiceValues['address'].'<br />
-			NTN : '.$invoiceValues['ntn'].'<br />
-			STRN : '.$invoiceValues['strn'].'<br />
+			Name : ' . $invoiceValues['name'] . '<br /> 
+			Billing Address : ' . $invoiceValues['address'] . '<br />
+			NTN : ' . $invoiceValues['ntn'] . '<br />
+			STRN : ' . $invoiceValues['strn'] . '<br />
 			</td>
 			<td width="35%">         
-			Invoice No. : '.$invoiceValues['order_id'].'<br />
-			Invoice Date : '.$invoiceDate.'<br />
-			Name : '.$_SESSION['user'].'<br /> 
-			Address : '.$_SESSION['address'].'<br />
-			NTN : '.$_SESSION['ntn'].'<br />
-			STRN : '.$_SESSION['strn'].'<br />
+			Invoice No. : ' . $invoiceValues['order_id'] . '<br />
+			Invoice Date : ' . $invoiceDate . '<br />
+			Name : ' . $_SESSION['user'] . '<br /> 
+			Address : ' . $_SESSION['address'] . '<br />
+			NTN : ' . $_SESSION['ntn'] . '<br />
+			STRN : ' . $_SESSION['strn'] . '<br />
 			</td>
 			</tr>
 			</table>
@@ -113,53 +115,58 @@ $html .= '<html>
 			<th align="left">Price</th>
 			<th align="left">Actual Amt.</th> 
 			</tr>';
-		$count = 0;   
-		foreach($invoiceItems as $invoiceItem){
-			$count++;
-			$html .= '
+$count = 0;
+foreach ($invoiceItems as $invoiceItem) {
+	$count++;
+	$html .= '
 			<tr>
-			<td align="left">'.$count.'</td>
-			<td align="left">'.$invoiceItem["item_code"].'</td>
-			<td align="left">'.$invoiceItem["item_name"].'</td>
-			<td align="left">'.$invoiceItem["order_item_quantity"].'</td>
-			<td align="left">'.$invoiceItem["order_item_price"].'</td>
-			<td align="left">'.$invoiceItem["order_item_final_amount"].'</td>   
+			<td align="left">' . $count . '</td>
+			<td align="left">' . $invoiceItem["item_code"] . '</td>
+			<td align="left">' . $invoiceItem["item_name"] . '</td>
+			<td align="left">' . $invoiceItem["order_item_quantity"] . '</td>
+			<td align="left">' . $invoiceItem["order_item_price"] . '</td>
+			<td align="left">' . $invoiceItem["order_item_final_amount"] . '</td>   
 			</tr>';
-		}
-		$html .= '
+}
+$html .= '
 			<tr>
 			<td align="right" colspan="5"><b>Sub Total</b></td>
-			<td align="left"><b>'.$invoiceValues['order_total_before_tax'].'</b></td>
+			<td align="left"><b>' . $invoiceValues['order_total_before_tax'] . '</b></td>
 			</tr>
 			<tr>
 			<td align="right" colspan="5"><b>Tax Rate :</b></td>
-			<td align="left">'.$invoiceValues['order_tax_per'].'</td>
+			<td align="left">' . $invoiceValues['order_tax_per'] . '</td>
 			</tr>
 			<tr>
 			<td align="right" colspan="5">Tax Amount: </td>
-			<td align="left">'.$invoiceValues['order_total_tax'].'</td>
+			<td align="left">' . $invoiceValues['order_total_tax'] . '</td>
 			</tr>
 			<tr>
 			<td align="right" colspan="5">Total: </td>
-			<td align="left">'.$invoiceValues['order_total_after_tax'].'</td>
+			<td align="left">' . $invoiceValues['order_total_after_tax'] . '</td>
 			</tr>
 			<tr>
 			<td align="right" colspan="5">Amount Paid:</td>
-			<td align="left">'.$invoiceValues['order_amount_paid'].'</td>
+			<td align="left">' . $invoiceValues['order_amount_paid'] . '</td>
 			</tr>
 			<tr>
 			<td align="right" colspan="5"><b>Amount Due:</b></td>
-			<td align="left">'.$invoiceValues['order_total_amount_due'].'</td>
+			<td align="left">' . $invoiceValues['order_total_amount_due'] . '</td>
 			</tr>';
-		$html .= '
+$html .= '
 			</table>
 			</td>
 			</tr>
 			</table>';
-			$html.='
-			<div class="" style="margin-top: 10px;"> Note: '. $invoiceValues['note'] .'</div>
+$html .= '
+			<div class="" style="margin-top: 10px;"> Note: ' . $invoiceValues['note'] . '</div>
 			';
-		$html .='</main>
+$html .= '
+			<div style="position: absolute; bottom: 90px; right: 50px;">
+				<label for="" >Signature</label> <br>
+      	<img src="' . $URL . $_SESSION['file_path'] . '" alt="Signature" width="200" height="100"style="margin-top: 5px;" >
+			</div>';
+$html .= '</main>
 </body>
 </html>
 ';
@@ -176,5 +183,5 @@ $dompdf->render();
 // $dompdf->stream();
 ob_end_clean();
 
-$invoiceFileName = 'Invoice-'.$invoiceValues['order_id'].'.pdf';
+$invoiceFileName = 'Invoice-' . $invoiceValues['order_id'] . '.pdf';
 $dompdf->stream($invoiceFileName, array("Attachment" => false));

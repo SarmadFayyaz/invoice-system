@@ -2,9 +2,9 @@
 class Invoice
 {
 	private $host  = 'localhost';
-	private $user  = 'root';
-	private $password   = "";
-	private $database  = "ssn_demo";
+	private $user  = 'marveics_bts';
+	private $password   = "marveics_bts";
+	private $database  = "marveics_btsengineering";
 	private $invoiceUserTable = 'invoice_user';
 	private $customerTable = 'customer';
 	private $invoiceOrderTable = 'invoice_order';
@@ -48,7 +48,7 @@ class Invoice
 	public function loginUsers($email, $password)
 	{
 		$sqlQuery = "
-			SELECT id, email, first_name, last_name, address, mobile, ntn, strn 
+			SELECT id, email, first_name, last_name, address, mobile, ntn, strn, file_path
 			FROM " . $this->invoiceUserTable . " 
 			WHERE email='" . $email . "' AND password='" . $password . "'";
 		return  $this->getData($sqlQuery);
@@ -323,6 +323,15 @@ class Invoice
 	public function updateUser($POST)
 	{
 		if ($POST['userId']) {
+
+			// print_r($_FILES['signature']['tmp_name']);
+			// exit;
+			$file_path = '';
+			if (isset($_FILES['signature'])) {
+				$file_path = "img/uploads/" . $_FILES['signature']['name'];
+				$file_tmp = $_FILES['signature']['tmp_name'];
+				move_uploaded_file($file_tmp, $file_path);
+			}
 			$user = $this->getUser();
 			$sqlInsert = "UPDATE " . $this->invoiceUserTable . " SET "
 				. " email = '" . (!empty($POST['email']) ? $POST['email'] : $user['email'])
@@ -333,6 +342,7 @@ class Invoice
 				. "', address= '" . (!empty($POST['address']) ? $POST['address'] : $user['address'])
 				. "', ntn= '" . (!empty($POST['ntn']) ? $POST['ntn'] : $user['ntn'])
 				. "', strn= '" . (!empty($POST['strn']) ? $POST['strn'] : $user['strn'])
+				. "', file_path= '" . ($file_path != '' ? $file_path : $user['file_path'])
 				. "' WHERE id = '" . $POST['userId'] . "'";
 			mysqli_query($this->dbConnect, $sqlInsert);
 		}

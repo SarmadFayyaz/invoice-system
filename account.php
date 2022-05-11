@@ -5,18 +5,17 @@ include('header.php');
 include 'Invoice.php';
 $invoice = new Invoice();
 $user = $invoice->getUser();
-// print_r($user['id']);
+$_SESSION['user'] = $user['first_name'] . " " . $user['last_name'];
+$_SESSION['userid'] = $user['id'];
+$_SESSION['email'] = $user['email'];
+$_SESSION['address'] = $user['address'];
+$_SESSION['mobile'] = $user['mobile'];
+$_SESSION['ntn'] = $user['ntn'];
+$_SESSION['strn'] = $user['strn'];
+$_SESSION['file_path'] = $user['file_path'];
 $invoice->checkLoggedIn();
 if (!empty($_POST['userId']) && $_POST['userId']) {
 	$invoice->updateUser($_POST);
-	$user = $invoice->getUser();
-	$_SESSION['user'] = $user['first_name'] . " " . $user['last_name'];
-	$_SESSION['userid'] = $user['id'];
-	$_SESSION['email'] = $user['email'];
-	$_SESSION['address'] = $user['address'];
-	$_SESSION['mobile'] = $user['mobile'];
-	$_SESSION['ntn'] = $user['ntn'];
-	$_SESSION['strn'] = $user['strn'];
 	header("Location:account.php");
 }
 ?>
@@ -27,16 +26,8 @@ if (!empty($_POST['userId']) && $_POST['userId']) {
 <div class="container content-invoice">
 	<div class="cards">
 		<div class="card-body">
-			<form action="" id="invoice-form" method="post" class="invoice-form" role="form" novalidate="">
+			<form action="" id="invoice-form" method="post" class="invoice-form" role="form" novalidate="" enctype="multipart/form-data">
 				<input type="hidden" value="<?php echo $_SESSION['userid']; ?>" class="form-control" name="userId">
-				<input type="hidden" value="<?php echo $user['email']; ?>" class="form-control" name="email">
-				<input type="hidden" value="" class="form-control" name="password">
-				<input type="hidden" value="<?php echo $user['first_name']; ?>" class="form-control" name="first_name">
-				<input type="hidden" value="<?php echo $user['last_name']; ?>" class="form-control" name="last_name">
-				<input type="hidden" value="<?php echo $user['mobile']; ?>" class="form-control" name="mobile">
-				<input type="hidden" value="<?php echo $user['address']; ?>" class="form-control" name="address">
-				<input type="hidden" value="<?php echo $user['ntn']; ?>" class="form-control" name="ntn">
-				<input type="hidden" value="<?php echo $user['strn']; ?>" class="form-control" name="strn">
 				<div class="load-animate animated fadeInUp">
 					<div class="row">
 						<div class="col-xs-12">
@@ -93,6 +84,13 @@ if (!empty($_POST['userId']) && $_POST['userId']) {
 								<input type="text" class="form-control" name="strn" id="strn" placeholder="STRN" autocomplete="off" value="<?php echo $user['strn']; ?>">
 							</div>
 						</div>
+						<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+							<div class="form-group">
+								<label>Signature: &nbsp;</label>
+								<input type="file" class="form-control" name="signature" id="signature">
+							</div>
+						</div>
+					</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
